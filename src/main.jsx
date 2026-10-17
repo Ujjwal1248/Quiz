@@ -12,6 +12,8 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
+  const [answerResults, setAnswerResults] = useState([]);
+  const [guessedQuestions, setGuessedQuestions] = useState([]);
   const [finished, setFinished] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -84,10 +86,24 @@ function App() {
     if (selectedAnswer !== null) return;
 
     setSelectedAnswer(option);
+    setAnswerResults((previous) => ({
+      ...previous,
+      [currentIndex]: {
+        answer: option,
+        correct: correctAnswers.includes(option),
+      },
+    }));
 
     if (correctAnswers.includes(option)) {
       setScore((prev) => prev + 1);
     }
+  };
+
+  const toggleGuessed = () => {
+    setGuessedQuestions((previous) => ({
+      ...previous,
+      [currentIndex]: !previous[currentIndex],
+    }));
   };
 
   const nextQuestion = () => {
@@ -115,6 +131,8 @@ function App() {
     setCurrentIndex(0);
     setSelectedAnswer(null);
     setScore(0);
+    setAnswerResults([]);
+    setGuessedQuestions([]);
     setFinished(false);
   };
 
@@ -138,6 +156,16 @@ function App() {
     const percentage = Math.round(
       (score / shuffledQuestions.length) * 100
     );
+    const wrongQuestions = shuffledQuestions
+      .map((question, index) => ({
+        question,
+        result: answerResults[index],
+        index,
+      }))
+      .filter(({ result }) => result && !result.correct);
+    const markedGuesses = shuffledQuestions
+      .map((question, index) => ({ question, index }))
+      .filter(({ index }) => guessedQuestions[index]);
 
     return (
       <div className="app">
@@ -188,9 +216,7 @@ function App() {
               </div>
 
               <div>
-                <strong>
-                  {shuffledQuestions.length - score}
-                </strong>
+                <strong>{wrongQuestions.length}</strong>
                 <span>Incorrect</span>
               </div>
 
@@ -202,6 +228,41 @@ function App() {
               </div>
 
             </div>
+
+            {(wrongQuestions.length > 0 || markedGuesses.length > 0) && (
+              <div className="result-lists">
+                {wrongQuestions.length > 0 && (
+                  <section className="result-list">
+                    <h2>Wrong Answers ({wrongQuestions.length})</h2>
+                    {wrongQuestions.map(({ question, result, index }) => (
+                      <div className="result-list-item" key={`wrong-${index}`}>
+                        <strong>Q{index + 1}. {question.question}</strong>
+                        <span>Your answer: {result.answer}</span>
+                        <span>Correct answer: {Array.isArray(question.correctAnswer)
+                          ? question.correctAnswer.join(", ")
+                          : question.correctAnswer}</span>
+                      </div>
+                    ))}
+                  </section>
+                )}
+
+                {markedGuesses.length > 0 && (
+                  <section className="result-list">
+                    <h2>Marked as Guessed ({markedGuesses.length})</h2>
+                    {markedGuesses.map(({ question, index }) => (
+                      <div className="result-list-item" key={`guess-${index}`}>
+                        <strong>Q{index + 1}. {question.question}</strong>
+                        <span>
+                          {answerResults[index]
+                            ? `Your answer: ${answerResults[index].answer}`
+                            : "Not answered"}
+                        </span>
+                      </div>
+                    ))}
+                  </section>
+                )}
+              </div>
+            )}
 
             <button
               className="restart-btn"
@@ -345,6 +406,14 @@ function App() {
           <p className="instruction">
             Select the best answer from the options below
           </p>
+
+          <button
+            className={`guess-btn${guessedQuestions[currentIndex] ? " marked" : ""}`}
+            onClick={toggleGuessed}
+            type="button"
+          >
+            {guessedQuestions[currentIndex] ? "★ Marked as guessed" : "☆ Mark as guessed"}
+          </button>
 
           {/* OPTIONS */}
 

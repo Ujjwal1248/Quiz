@@ -446,7 +446,34 @@ button {
 
   font-size: 12px;
 
-  margin-bottom: 25px;
+  margin-bottom: 10px;
+}
+
+.guess-btn {
+  margin-bottom: 18px;
+  padding: 7px 11px;
+
+  border: 1px solid #dfe3f0;
+  border-radius: 8px;
+
+  color: #68738a;
+  background: #fafbfe;
+
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.guess-btn:hover,
+.guess-btn.marked {
+  border-color: #f0b94f;
+  color: #9a6500;
+  background: #fff9e8;
 }
 
 /* ================================
@@ -924,6 +951,44 @@ button {
   color: #8b95a7;
 
   font-size: 12px;
+}
+
+.result-lists {
+  margin: 28px 0 24px;
+  text-align: left;
+}
+
+.result-list + .result-list {
+  margin-top: 20px;
+}
+
+.result-list h2 {
+  margin-bottom: 10px;
+
+  color: #4f46e5;
+  font-size: 14px;
+}
+
+.result-list-item {
+  display: grid;
+  gap: 4px;
+
+  margin-top: 8px;
+  padding: 11px 12px;
+
+  border: 1px solid #edf0f5;
+  border-radius: 10px;
+  background: #fafbfe;
+
+  color: #7b8495;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.result-list-item strong {
+  color: #30394b;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 /* ================================
